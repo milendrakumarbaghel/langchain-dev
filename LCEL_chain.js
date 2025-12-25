@@ -19,36 +19,45 @@ const model = new ChatGoogleGenerativeAI({
     maxOutputTokens: MODEL_MAX_OUTPUT_TOKENS ? Number(MODEL_MAX_OUTPUT_TOKENS) : 2048,
 });
 
+const prompt = PromptTemplate.fromTemplate(
+    "You are a concise assistant. Answer the user question briefly. Question: {input}"
+);
 
-async function run() {
-    const userQuestion = process.argv.slice(2).join(" ") || "What is LangChain?";
-    try {
-        const formattedPrompt = await prompt.format({ input: userQuestion });
-        const response = await model.invoke(formattedPrompt);
-        const output = normalizeResponse(response);
-        console.log(output || "No response text returned.");
-    } catch (error) {
-        console.error("Model call failed:", error instanceof Error ? error.message : error);
-        process.exit(1);
-    }
-}
+const chain = prompt.pipe(model);
 
-function normalizeResponse(response) {
-    if (!response) return "";
-    if (typeof response === "string") return response.trim();
-    if (typeof response.content === "string") return response.content.trim();
-    if (Array.isArray(response.content)) {
-        const text = response.content
-            .map((part) => {
-                if (typeof part === "string") return part;
-                if (part?.text) return part.text;
-                return "";
-            })
-            .join(" ");
-        return text.trim();
-    }
-    if (typeof response.text === "string") return response.text.trim();
-    return "";
-}
+const response = await chain.invoke({ input: "What is LangChain?" });
 
-run();
+console.log(response.text?.trim() || "No response text returned.");
+
+// async function run() {
+//     const userQuestion = process.argv.slice(2).join(" ") || "What is LangChain?";
+//     try {
+//         const formattedPrompt = await prompt.format({ input: userQuestion });
+//         const response = await model.invoke(formattedPrompt);
+//         const output = normalizeResponse(response);
+//         console.log(output || "No response text returned.");
+//     } catch (error) {
+//         console.error("Model call failed:", error instanceof Error ? error.message : error);
+//         process.exit(1);
+//     }
+// }
+
+// function normalizeResponse(response) {
+//     if (!response) return "";
+//     if (typeof response === "string") return response.trim();
+//     if (typeof response.content === "string") return response.content.trim();
+//     if (Array.isArray(response.content)) {
+//         const text = response.content
+//             .map((part) => {
+//                 if (typeof part === "string") return part;
+//                 if (part?.text) return part.text;
+//                 return "";
+//             })
+//             .join(" ");
+//         return text.trim();
+//     }
+//     if (typeof response.text === "string") return response.text.trim();
+//     return "";
+// }
+
+// run();
