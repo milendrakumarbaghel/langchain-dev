@@ -3,7 +3,7 @@ import { config } from "dotenv";
 config();
 
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
-import { LLMChain } from "langchain/chains";
+import { LLMChain } from "langchain/chains"; // Old, now deprecated
 import { PromptTemplate } from "@langchain/core/prompts";
 
 const { GOOGLE_API_KEY, GOOGLE_MODEL_NAME, MODEL_TEMPERATURE, MODEL_MAX_OUTPUT_TOKENS } = process.env;
